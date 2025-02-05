@@ -1,28 +1,42 @@
-{ lib, stdenv, fetchurl, fetchpatch }:
+{
+  directoryListingUpdater,
+  fetchurl,
+  lib,
+  stdenv,
+  coreutils,
+  kmod,
+}:
 
-stdenv.mkDerivation rec {
+stdenv.mkDerivation (finalAttrs: {
   pname = "alsa-ucm-conf";
-  version = "1.2.10";
+  version = "1.2.12";
 
   src = fetchurl {
-    url = "mirror://alsa/lib/${pname}-${version}.tar.bz2";
-    hash = "sha256-nCHj8B/wC6p1jfF+hnzTbiTrtBpr7ElzfpkQXhbyrpc=";
+    url = "mirror://alsa/lib/alsa-ucm-conf-${finalAttrs.version}.tar.bz2";
+    hash = "sha256-Fo58BUm3v4mRCS+iv7kDYx33edxMQ+6PQnf8t3LYwDU=";
   };
-
-  patches = [
-    (fetchpatch {
-      # ToDo: Remove this patch in the next package upgrade
-      # Fixes SplitPCM to make some audio devices work with alsa-ucm-conf v1.2.10 again
-      name = "alsa-ucm-conf-splitpcm-device-argument-fix.patch";
-      url = "https://github.com/alsa-project/alsa-ucm-conf/commit/b68aa52acdd2763fedad5eec0f435fbf43e5ccc6.patch";
-      hash = "sha256-8WE4+uhi4W7cCSZYmL7uFpcHJ9muX09UkGXyZIpEd9I=";
-    })
-  ];
 
   dontBuild = true;
 
   installPhase = ''
     runHook preInstall
+
+    substituteInPlace ucm2/lib/card-init.conf \
+      --replace-fail "/bin/rm" "${coreutils}/bin/rm" \
+      --replace-fail "/bin/mkdir" "${coreutils}/bin/mkdir"
+
+    files=(
+        "ucm2/HDA/HDA.conf"
+        "ucm2/codecs/rt715/init.conf"
+        "ucm2/codecs/rt715-sdca/init.conf"
+        "ucm2/Intel/cht-bsw-rt5672/cht-bsw-rt5672.conf"
+        "ucm2/Intel/bytcr-rt5640/bytcr-rt5640.conf"
+    )
+
+    for file in "''${files[@]}"; do
+        substituteInPlace "$file" \
+            --replace-fail '/sbin/modprobe' '${kmod}/bin/modprobe'
+    done
 
     mkdir -p $out/share/alsa
     cp -r ucm ucm2 $out/share/alsa
@@ -30,7 +44,11 @@ stdenv.mkDerivation rec {
     runHook postInstall
   '';
 
-  meta = with lib; {
+  passthru.updateScript = directoryListingUpdater {
+    url = "https://www.alsa-project.org/files/pub/lib/";
+  };
+
+  meta = {
     homepage = "https://www.alsa-project.org/";
     description = "ALSA Use Case Manager configuration";
 
@@ -39,8 +57,8 @@ stdenv.mkDerivation rec {
       MIDI functionality to the Linux-based operating system.
     '';
 
-    license = licenses.bsd3;
-    maintainers = [ maintainers.roastiek ];
-    platforms = platforms.linux;
+    license = lib.licenses.bsd3;
+    maintainers = [ lib.maintainers.roastiek ];
+    platforms = lib.platforms.linux;
   };
-}
+})

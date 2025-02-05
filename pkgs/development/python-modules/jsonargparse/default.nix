@@ -1,31 +1,30 @@
-{ lib
-, argcomplete
-, attrs
-, buildPythonPackage
-, docstring-parser
-, fetchFromGitHub
-, fsspec
-, jsonnet
-, jsonschema
-, omegaconf
-, pydantic
-, pytest-subtests
-, pytestCheckHook
-, pythonOlder
-, pyyaml
-, reconplogger
-, requests
-, responses
-, ruyaml
-, setuptools
-, types-pyyaml
-, types-requests
-, typeshed-client
+{
+  lib,
+  argcomplete,
+  buildPythonPackage,
+  docstring-parser,
+  fetchFromGitHub,
+  fsspec,
+  jsonnet,
+  jsonschema,
+  omegaconf,
+  pytest-subtests,
+  pytestCheckHook,
+  pythonOlder,
+  pyyaml,
+  reconplogger,
+  requests,
+  ruyaml,
+  setuptools,
+  toml,
+  types-pyyaml,
+  types-requests,
+  typeshed-client,
 }:
 
 buildPythonPackage rec {
   pname = "jsonargparse";
-  version = "4.27.4";
+  version = "4.36.0";
   pyproject = true;
 
   disabled = pythonOlder "3.11";
@@ -33,19 +32,15 @@ buildPythonPackage rec {
   src = fetchFromGitHub {
     owner = "omni-us";
     repo = "jsonargparse";
-    rev = "refs/tags/v${version}";
-    hash = "sha256-MzcFsH1PyDAnPBEELHLRKfD3TR01INDFIvHc1y3dbng=";
+    tag = "v${version}";
+    hash = "sha256-wtYE6DQ6EgTFJjzx3IdavnV6TUIGmvPM3PR/+9oeJAk=";
   };
 
-  nativeBuildInputs = [
-    setuptools
-  ];
+  build-system = [ setuptools ];
 
-  propagatedBuildInputs = [
-    pyyaml
-  ];
+  dependencies = [ pyyaml ];
 
-  passthru.optional-dependencies = {
+  optional-dependencies = {
     all = [
       argcomplete
       fsspec
@@ -57,35 +52,22 @@ buildPythonPackage rec {
       typeshed-client
       requests
     ];
-    argcomplete = [
-      argcomplete
-    ];
-    fsspec = [
-      fsspec
-    ];
+    argcomplete = [ argcomplete ];
+    fsspec = [ fsspec ];
     jsonnet = [
       jsonnet
       # jsonnet-binary
     ];
-    jsonschema = [
-      jsonschema
-    ];
-    omegaconf = [
-      omegaconf
-    ];
-    reconplogger = [
-      reconplogger
-    ];
-    ruyaml = [
-      ruyaml
-    ];
+    jsonschema = [ jsonschema ];
+    omegaconf = [ omegaconf ];
+    reconplogger = [ reconplogger ];
+    ruyaml = [ ruyaml ];
     signatures = [
       docstring-parser
       typeshed-client
     ];
-    urls = [
-      requests
-    ];
+    toml = [ toml ];
+    urls = [ requests ];
   };
 
   nativeCheckInputs = [
@@ -95,14 +77,12 @@ buildPythonPackage rec {
     types-requests
   ];
 
-  pythonImportsCheck = [
-    "jsonargparse"
-  ];
+  pythonImportsCheck = [ "jsonargparse" ];
 
   meta = with lib; {
-    description = "Module to mplement minimal boilerplate CLIs derived from various sources";
+    description = "Module to implement minimal boilerplate CLIs derived from various sources";
     homepage = "https://github.com/omni-us/jsonargparse";
-    changelog = "https://github.com/omni-us/jsonargparse/blob/${version}/CHANGELOG.rst";
+    changelog = "https://github.com/omni-us/jsonargparse/blob/v${version}/CHANGELOG.rst";
     license = licenses.mit;
     maintainers = with maintainers; [ fab ];
   };

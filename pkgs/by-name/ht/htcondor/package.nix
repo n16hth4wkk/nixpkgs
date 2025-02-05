@@ -14,20 +14,20 @@
 , munge
 , voms
 , perl
-, scitoken-cpp
+, scitokens-cpp
 , openssl
 }:
 
 stdenv.mkDerivation rec {
   pname = "htcondor";
-  version = "23.4.0";
+  version = "24.2.2";
 
   src = fetchFromGitHub {
     owner = "htcondor";
     repo = "htcondor";
 
-    rev = "v23.4.0";
-    hash = "sha256-+WfNVxP7qsEpn8zPretLnOEAnPq0GylyxCbcQI8o0L0=";
+    rev = "v${version}";
+    hash = "sha256-F8uI8Stvao7VKULTcOjv/nFUhFHxqd00gRNe6tkKgPE=";
   };
 
   nativeBuildInputs = [ cmake ];
@@ -45,9 +45,10 @@ stdenv.mkDerivation rec {
     munge
     voms
     perl
-    scitoken-cpp
+    scitokens-cpp
   ];
 
+  env.CXXFLAGS = "-fpermissive";
 
   cmakeFlags = [ "-DSYSTEM_NAME=NixOS" "-DWITH_PYTHON_BINDINGS=false" ];
 
@@ -58,5 +59,7 @@ stdenv.mkDerivation rec {
     platforms = platforms.linux;
     license = licenses.asl20;
     maintainers = with maintainers; [ evey ];
+    # cannot find -lpthread: No such file or directory
+    broken = stdenv.hostPlatform.isAarch64;
   };
 }

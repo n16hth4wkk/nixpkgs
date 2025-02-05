@@ -1,26 +1,24 @@
 { lib, fetchCrate, rustPlatform, clang, rustfmt
-, runtimeShell
-, bash
 }:
 let
   # bindgen hardcodes rustfmt outputs that use nightly features
   rustfmt-nightly = rustfmt.override { asNightly = true; };
 in rustPlatform.buildRustPackage rec {
   pname = "rust-bindgen-unwrapped";
-  version = "0.69.2";
+  version = "0.71.1";
 
   src = fetchCrate {
     pname = "bindgen-cli";
     inherit version;
-    sha256 = "sha256-ytbaXCVNXXBtJet5CBkCNUoISxdFXt/kgb4VVZisUXE=";
+    hash = "sha256-RL9P0dPYWLlEGgGWZuIvyULJfH+c/B+3sySVadJQS3w=";
   };
 
-  cargoHash = "sha256-pnoCq25CrZIAQNkDsokIVVyUYLlg7WY6th17IgeW9x8=";
+  cargoHash = "sha256-i92f9grVqVqWmOKkLcBxB1Brk5KztJpPi9zSxVcgXfY=";
 
-  buildInputs = [ clang.cc.lib ];
+  buildInputs = [ (lib.getLib clang.cc) ];
 
   preConfigure = ''
-    export LIBCLANG_PATH="${clang.cc.lib}/lib"
+    export LIBCLANG_PATH="${lib.getLib clang.cc}/lib"
   '';
 
   doCheck = true;
@@ -43,7 +41,7 @@ in rustPlatform.buildRustPackage rec {
     '';
     homepage = "https://github.com/rust-lang/rust-bindgen";
     license = with licenses; [ bsd3 ];
-    maintainers = with maintainers; [ johntitor ralith ];
+    maintainers = with maintainers; [ johntitor ];
     mainProgram = "bindgen";
     platforms = platforms.unix;
   };

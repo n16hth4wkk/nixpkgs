@@ -1,25 +1,27 @@
-{ lib
-, allpairspy
-, approval-utilities
-, beautifulsoup4
-, buildPythonPackage
-, empty-files
-, fetchFromGitHub
-, mock
-, mrjob
-, numpy
-, pyperclip
-, pytest
-, pytest-asyncio
-, pytestCheckHook
-, pythonOlder
-, setuptools
-, testfixtures
+{
+  lib,
+  allpairspy,
+  approval-utilities,
+  beautifulsoup4,
+  buildPythonPackage,
+  empty-files,
+  fetchFromGitHub,
+  mock,
+  mrjob,
+  numpy,
+  pyperclip,
+  pytest,
+  pytest-asyncio,
+  pytestCheckHook,
+  pythonOlder,
+  setuptools,
+  testfixtures,
+  typing-extensions,
 }:
 
 buildPythonPackage rec {
   pname = "approvaltests";
-  version = "10.3.0";
+  version = "14.3.0";
   pyproject = true;
 
   disabled = pythonOlder "3.8";
@@ -27,15 +29,13 @@ buildPythonPackage rec {
   src = fetchFromGitHub {
     owner = "approvals";
     repo = "ApprovalTests.Python";
-    rev = "refs/tags/v${version}";
-    hash = "sha256-1f0iTwLREF20Khkd4/xEfxXINJIpc4LfszsvCblS/yM=";
+    tag = "v${version}";
+    hash = "sha256-HcF4SjAdAPxINB0+kI1RWtKQ3VBhMNpFk6BECup7E+w=";
   };
 
-  nativeBuildInputs = [
-    setuptools
-  ];
+  build-system = [ setuptools ];
 
-  propagatedBuildInputs = [
+  dependencies = [
     allpairspy
     approval-utilities
     beautifulsoup4
@@ -45,6 +45,7 @@ buildPythonPackage rec {
     pyperclip
     pytest
     testfixtures
+    typing-extensions
   ];
 
   nativeCheckInputs = [
@@ -54,8 +55,8 @@ buildPythonPackage rec {
   ];
 
   disabledTests = [
-    "test_docstrings"
-    # Tests expects paths below ApprovalTests.Python directory
+    "test_preceding_whitespace"
+    # Tests expect paths below ApprovalTests.Python directory
     "test_received_filename"
     "test_pytest_namer"
   ];
@@ -70,6 +71,6 @@ buildPythonPackage rec {
     homepage = "https://github.com/approvals/ApprovalTests.Python";
     changelog = "https://github.com/approvals/ApprovalTests.Python/releases/tag/v${version}";
     license = licenses.asl20;
-    maintainers = with maintainers; [ marsam ];
+    maintainers = [ ];
   };
 }

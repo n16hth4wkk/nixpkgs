@@ -1,31 +1,38 @@
-{ lib
-, buildPythonPackage
-, demes
-, fetchPypi
-, gsl
-, newick
-, numpy
-, oldest-supported-numpy
-, pytest-xdist
-, pytestCheckHook
-, pythonOlder
-, scipy
-, setuptools-scm
-, tskit
-, wheel
+{
+  lib,
+  buildPythonPackage,
+  demes,
+  fetchPypi,
+  gsl,
+  newick,
+  numpy,
+  oldest-supported-numpy,
+  pytest-xdist,
+  pytestCheckHook,
+  pythonOlder,
+  scipy,
+  setuptools-scm,
+  tskit,
+  wheel,
 }:
 
 buildPythonPackage rec {
   pname = "msprime";
-  version = "1.3.0";
+  version = "1.3.3";
   pyproject = true;
 
   disabled = pythonOlder "3.8";
 
   src = fetchPypi {
     inherit pname version;
-    hash = "sha256-eYjGHvlJXDZ+gu/J+52AI8PbKiB6ZEXUORlTrzxCbCk=";
+    hash = "sha256-2K55gHYWf2Mrj9fszVCJ+qqEyQNMppQi+IZCX5SlsBs=";
   };
+
+  postPatch = ''
+    # build-time constriant, used to ensure forward and backward compat
+    substituteInPlace pyproject.toml \
+      --replace-fail "numpy>=2" "numpy"
+  '';
 
   nativeBuildInputs = [
     gsl
@@ -34,9 +41,7 @@ buildPythonPackage rec {
     wheel
   ];
 
-  buildInputs = [
-    gsl
-  ];
+  buildInputs = [ gsl ];
 
   propagatedBuildInputs = [
     numpy
@@ -71,9 +76,7 @@ buildPythonPackage rec {
   preCheck = ''
     rm -r msprime
   '';
-  pythonImportsCheck = [
-    "msprime"
-  ];
+  pythonImportsCheck = [ "msprime" ];
 
   meta = with lib; {
     description = "Simulate genealogical trees and genomic sequence data using population genetic models";

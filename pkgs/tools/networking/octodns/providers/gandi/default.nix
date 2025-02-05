@@ -1,17 +1,18 @@
-{ lib
-, buildPythonPackage
-, fetchFromGitHub
-, octodns
-, pytestCheckHook
-, pythonOlder
-, requests
-, requests-mock
-, setuptools
+{
+  lib,
+  buildPythonPackage,
+  fetchFromGitHub,
+  octodns,
+  pytestCheckHook,
+  pythonOlder,
+  requests,
+  requests-mock,
+  setuptools,
 }:
 
 buildPythonPackage rec {
   pname = "octodns-gandi";
-  version = "0.0.2";
+  version = "0.0.3";
   pyproject = true;
 
   disabled = pythonOlder "3.8";
@@ -19,8 +20,8 @@ buildPythonPackage rec {
   src = fetchFromGitHub {
     owner = "octodns";
     repo = "octodns-gandi";
-    rev = "refs/tags/v${version}";
-    hash = "sha256-aZUVdCeIbyXBgy8HNf6bZSmjdRzIvQkCEzndKGyuTkw=";
+    tag = "v${version}";
+    hash = "sha256-L7kDkqTVmU8OqjMS3GkML1xBxEuwb9iyYi/YZBB4NSU=";
   };
 
   nativeBuildInputs = [

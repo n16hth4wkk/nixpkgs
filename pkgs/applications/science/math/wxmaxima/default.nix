@@ -1,37 +1,38 @@
-{ lib
-, stdenv
-, fetchFromGitHub
-, wrapGAppsHook
-, cmake
-, gettext
-, maxima
-, wxGTK
-, gnome
-, glib
+{
+  lib,
+  stdenv,
+  fetchFromGitHub,
+  wrapGAppsHook3,
+  cmake,
+  gettext,
+  maxima,
+  wxGTK,
+  adwaita-icon-theme,
+  glib,
 }:
 
-stdenv.mkDerivation (finalAttrs:{
+stdenv.mkDerivation (finalAttrs: {
   pname = "wxmaxima";
-  version = "24.02.0";
+  version = "25.01.0";
 
   src = fetchFromGitHub {
     owner = "wxMaxima-developers";
     repo = "wxmaxima";
     rev = "Version-${finalAttrs.version}";
-    hash = "sha256-X4nx8zARToogQS4bfkv3CbsS2qU2uL9BBYw0Lw7QC18=";
+    hash = "sha256-XFlEBmKxpi7NnUxVXV2F+zQKrvR4r93aLtHOoVZ7SPw=";
   };
 
   buildInputs = [
     wxGTK
     maxima
     # So it won't embed svg files into headers.
-    gnome.adwaita-icon-theme
+    adwaita-icon-theme
     # So it won't crash under Sway.
     glib
   ];
 
   nativeBuildInputs = [
-    wrapGAppsHook
+    wrapGAppsHook3
     cmake
     gettext
   ];
@@ -46,6 +47,7 @@ stdenv.mkDerivation (finalAttrs:{
 
   meta = with lib; {
     description = "Cross platform GUI for the computer algebra system Maxima";
+    mainProgram = "wxmaxima";
     license = licenses.gpl2;
     homepage = "https://wxmaxima-developers.github.io/wxmaxima/";
     maintainers = with maintainers; [ doronbehar ];
